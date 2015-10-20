@@ -1,31 +1,75 @@
-<body>
+<template name="layout">
+    <a href="{{pathFor route='home'}}"><h1>Drive da radio</h1></a>
+    {{> yield}}
+    <hr />
+    <p>Copyright &copy; DDR, 2015.</p>
+</template>
+
+<template name="home">
 	<div class="container">
-		<h1>Playlist</h1>
-	    <button class="volume-down">-</button>
-	    {{volume}}
-	    <button class="volume-up">+</button>
+		<header>
+    		<h2>Join</h2>
+    	</header>
+    	<form class="join-radio">
+        	<input type="text" name="name" placeholder="Name" />
 
-	    <h2>Songs</h2>
-
-	    <ul>
-	      {{#each songs}}
-	        {{> song}}
-	      {{/each}}
-	    </ul>
-
-	    <h2>Add a song</h2>
-
-	    <form class="new-song">
-	        <input type="text" name="artist" placeholder="Artist" />
-	        <input type="text" name="title" placeholder="Title" />
-	        <input type="text" name="link" placeholder="Link" />
-
-	        <input type="submit" value="Add song">
-	    </form>
+        	<input type="submit" value="Go" />
+    	</form>
+    	<h2>Existing</h2>
+			{{#each radios}}
+				{{> radioName}}
+			{{/each}}
 	</div>
-</body>
+</template>
+
+<template name="radioName">
+	<li>
+		{{name}}
+	</li>
+</template>
+
+<template name="radio">
+	<div class="container">
+		<header>
+		  <h2>Radio {{name}}</h2>
+		</header>
+		
+		<button class="volume-down">-</button>
+		{{volume}}
+		<button class="volume-up">+</button>
+		
+		<h3>Songs</h3>
+		<h4>Current</h4>
+			{{#each currentSongs}}
+				{{> currentSong}}
+			{{/each}}
+		<h4>Incoming</h4>
+		<ul>
+			{{#each songs}}
+				{{> song}}
+			{{/each}}
+		</ul>
+		
+		<h3>Add a song</h3>
+
+		<form class="new-song">
+			<input type="text" name="artist" placeholder="Artist" />
+			<input type="text" name="title" placeholder="Title" />
+			<input type="text" name="link" placeholder="Link" />
+			
+			<input type="submit" value="Add song">
+		</form>
+		
+	</div>
+</template>
 
 <template name="song">
-	<li>{{artist}} - {{title}} (<a href="{{link}}" target="_blank">{{name}}</a>) <button class="delete">&times;</button></li>
+	<li>
+		{{artist}} - {{title}} (<a href="{{link}}" target="_blank">{{name}}</a>)
+		<button class="delete">&times;</button>
+	</li>
 </template>
-	
+
+<template name="currentSong">
+	{{artist}} - {{title}} (<a href="{{link}}" target="_blank">{{name}}</a>)
+</template>
