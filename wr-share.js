@@ -19,6 +19,15 @@ Router.route('/r/:name', {
     }
 });
 
+Router.route('/r/:name/nuke', {
+    name: 'nuke',
+    template: 'nuke',
+    data: function(){
+        var radioName = this.params.name;
+        return Radios.findOne({ name: radioName });
+    }
+});
+
 if (Meteor.isClient) {
     Session.setDefault("volume", 50);
 
@@ -58,12 +67,12 @@ if (Meteor.isClient) {
     
     Template.radio.helpers({
         currentSongs: function () {
-            var radio = Radios.findOne({ name: this.params.name });
-            return Songs.find({}, {sort: {createdAt: 1}, limit : 1});
+            var radio = Radios.findOne({ name: Router.current().params.name });
+            return Songs.find({radio: radio._id}, {sort: {createdAt: 1}, limit : 1});
         },
         songs: function () {
-            var radio = Radios.findOne({ name: this.params.name });
-            return Songs.find({}, {sort: {createdAt: 1}, skip: 1});
+            var radio = Radios.findOne({ name: Router.current().params.name });
+            return Songs.find({radio: radio._id}, {sort: {createdAt: 1}, skip: 1});
         }
     });
     
@@ -77,6 +86,7 @@ if (Meteor.isClient) {
             var title = event.target.title.value;
             var name = event.target.link.value;
             var link = event.target.link.value;
+            var radio = event.target.radio.value;
 
             // Insert a song into the collection
             Songs.insert({
@@ -84,6 +94,7 @@ if (Meteor.isClient) {
                 title: title,
                 name: name,
                 link: link,
+                radio: radio,
                 createdAt: new Date() // current time
             });
 
@@ -107,6 +118,25 @@ if (Meteor.isClient) {
     Template.song.events({
         "click .delete": function () {
             Songs.remove(this._id);
+        }
+    });
+
+    Template.nuke.events({
+        "click .btn-danger": function (event) {
+            event.preventDefault();
+
+            // Delete the radio
+            Radios.remove(event.target.id);
+            Songs.remove({ radio: event.target.id });
+
+            // Go to the radio
+            Router.go('home');
+        },
+
+        "click .btn-success": function (event) {
+            var name = event.target.name.value;
+            // Go to the radio
+            Router.go('radio', { name: event.target.id });
         }
     });
 }
